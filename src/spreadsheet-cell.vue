@@ -3,7 +3,7 @@
         <slot v-if="editMode" name="interface" />
         <slot v-else name="display" :display-item="mergedItemWithEdits" />
 
-        <div v-if="!editMode && fieldHasEdits" v-tooltip="t('unsaved_changes')" class="edit-dot"></div>
+        <div v-if="!editMode && fieldHasEdits" v-tooltip="t('unsaved_changes')" class="edit-marker"></div>
     </div>
 </template>
 
@@ -174,22 +174,26 @@
             min-width: 120px;
         }
 
-        &:focus {
-            .edit-dot {
-                display: none;
-            }
+        &:focus .edit-marker {
+            display: none;
         }
 
-        .edit-dot {
+        .edit-marker {
             position: absolute;
             left: 1px;
             top: 50%;
-            margin-top: -2px;
+            transform: translate(0, -50%);
             display: block;
-            width: 4px;
-            height: 4px;
-            border-radius: 4px;
-            background-color: var(--theme--foreground-subdued);
+            width: 5px;
+            height: 5px;
+            border-radius: 5px;
+            background-color: var(--theme--primary);
+
         }
+    }
+
+    :global(.align-right .spreadsheet-cell .edit-marker) {
+        left: auto !important;
+        right: 1px;
     }
 </style>
