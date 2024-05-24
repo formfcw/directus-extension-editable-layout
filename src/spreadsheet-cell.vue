@@ -41,6 +41,7 @@
 
         onKeyStroke('Enter', enterCell, { target });
         onKeyStroke(['Esc', 'Escape'], leaveCellAndFocus);
+        onKeyStroke('Tab', leaveCell, { target });
         onClickOutside(target, clickOutside);
 
         return { editMode, enterCell };
@@ -85,7 +86,7 @@
             const parent = vertical ? 'tr.table-row' : 'td.cell';
             const parentSibling = (e.target as HTMLElement)?.closest(parent)?.[next ? 'nextElementSibling' : 'previousElementSibling'];
             const cell = vertical
-                ? parentSibling?.querySelectorAll(`.spreadsheet-cell`)?.[props.column]
+                ? parentSibling?.querySelectorAll('.spreadsheet-cell')?.[props.column]
                 : parentSibling?.querySelector('.spreadsheet-cell');
 
             (cell as HTMLElement)?.focus()
