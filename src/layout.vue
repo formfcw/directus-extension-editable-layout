@@ -339,15 +339,18 @@
         display: contents;
         margin: var(--content-padding);
         margin-bottom: var(--content-padding-bottom);
+    }
 
-        :deep(.append.cell) {
+    .v-table {
+        & :deep(.append.cell) {
             position: sticky;
             right: 12px;
             background: var(--theme--background);
             overflow: visible;
+            z-index: 2;
         }
 
-        :deep(.append.cell:after) {
+        & :deep(.append.cell:after) {
             content: "";
             position: absolute;
             top: 0;
@@ -355,6 +358,11 @@
             bottom: 0;
             width: 12px;
             background: var(--theme--background);
+        }
+
+        & :deep(.cell.select),
+        & :deep(.cell.manual:not(.append)) {
+            padding-left: 0 !important;
         }
     }
 

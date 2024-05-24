@@ -115,6 +115,7 @@
     .spreadsheet-cell {
         display: flex;
         align-items: center;
+        position: relative;
         width: 100%;
         height: 100%;
 
@@ -172,10 +173,6 @@
         & :deep(.v-form .v-select .v-input) {
             min-width: 120px;
         }
-    }
-
-    .spreadsheet-cell {
-        position: relative;
 
         &:focus {
             .edit-dot {
