@@ -93,7 +93,8 @@
 
             <template v-for="header, index in tableHeaders" :key="header.value" #[`item.${header.value}`]="{ item }">
                 <spreadsheet-cell :column="index" @leaveCell="autoSaveEdits" :item="item" :field-key="header.value"
-                    :field-edits="edits[item[primaryKeyField?.field]]?.[header.value]">
+                    :field-edits="edits[item[primaryKeyField?.field]]?.[header.value]"
+                    :interface-id="header.field?.meta?.interface ?? 'input'">
                     <template #display="{ displayItem }">
                         <render-display :value="getFromAliasedItem(displayItem, header.value)"
                             :display="header.field.display" :options="header.field.displayOptions"
@@ -347,7 +348,7 @@
             right: 12px;
             background: var(--theme--background);
             overflow: visible;
-            z-index: 2;
+            z-index: 3;
         }
 
         & :deep(.append.cell:after) {

@@ -514,36 +514,17 @@ export default defineLayout<LayoutOptions, LayoutQuery>({
         }
 
         function useAllowedFields() {
-            const allowedTypes = [
-                // strings
-                "string",
-                "text",
-                // "uuid",
-                // numbers
-                "bigInteger",
-                "integer",
-                "float",
-                "decimal",
-                // boolean
-                "boolean",
-                // dates
-                "dateTime",
-                "date",
-                "time",
-                "timestamp",
-            ];
             const allowedInlineInterfaces = [
                 "boolean",
                 "collection-item-dropdown",
                 "datetime",
-                "file",
-                "file-image",
+                // "file",
                 "input",
                 "input-autocomplete-api",
                 "input-hash",
                 "select-color",
                 "select-dropdown",
-                "select-dropdown-m2o",
+                // "select-dropdown-m2o",
                 "select-icon",
                 "select-multiple-dropdown",
                 "slider",
@@ -566,8 +547,6 @@ export default defineLayout<LayoutOptions, LayoutQuery>({
                     !field.schema?.is_primary_key &&
                     !field.meta?.hidden &&
                     !field.meta?.readonly &&
-                    (!field.type ||
-                        (field.type && allowedTypes.includes(field.type))) &&
                     (!field.meta?.interface ||
                         (field.meta.interface &&
                             allowedInlineInterfaces.includes(

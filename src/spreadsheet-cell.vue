@@ -1,5 +1,6 @@
 <template>
-    <div ref="target" tabindex="0" class="spreadsheet-cell" :class="{ 'edit-mode': editMode }" @dblclick="enterCell">
+    <div ref="target" tabindex="0" class="spreadsheet-cell" :class="{ 'edit-mode': editMode, [interfaceId]: true }"
+        @dblclick="enterCell">
         <slot v-if="editMode" name="interface" />
         <slot v-else name="display" :display-item="mergedItemWithEdits" />
 
@@ -19,27 +20,62 @@
         item: any;
         fieldKey: string;
         fieldEdits?: any;
+        interfaceId: string;
     }>();
 
     const emit = defineEmits(['leaveCell']);
 
     const target = ref(null);
 
-    const { editMode, enterCell } = useEditMode({
-        onFocusCell() {
-            ((target.value! as HTMLElement)?.querySelector('.v-input') as HTMLElement)?.click();
-        }
-    });
+    const { editMode, enterCell } = useEditMode({ onFocusCell });
 
     useCellNavigation(editMode);
 
     const { t } = useI18n();
     const { fieldHasEdits, mergedItemWithEdits } = useDisplayEdits();
 
+    function onFocusCell() {
+        // CLICK
+
+        if (['select-dropdown', 'datetime', 'select-multiple-dropdown'].includes(props.interfaceId)) {
+            ((target.value! as HTMLElement)?.querySelector('.v-input') as HTMLElement)?.click();
+            return;
+        }
+
+        // CLICK AFTER DELAY
+
+        if (['collection-item-dropdown', 'file', 'select-dropdown-m2o'].includes(props.interfaceId)) {
+            setTimeout(() => {
+                ((target.value! as HTMLElement)?.querySelector('.v-input') as HTMLElement)?.click();
+            }, 50);
+            return;
+        }
+
+        // FOCUS
+
+        if (props.interfaceId == 'boolean') {
+            ((target.value! as HTMLElement)?.querySelector('button.v-checkbox') as HTMLElement)?.focus();
+            return;
+        }
+
+        if (['input-autocomplete-api', 'select-icon', 'input-hash'].includes(props.interfaceId)) {
+            ((target.value! as HTMLElement)?.querySelector('.v-input input') as HTMLElement)?.focus();
+            return;
+        }
+
+        if (['select-color'].includes(props.interfaceId)) {
+            ((target.value! as HTMLElement)?.querySelector('.v-input.color-input > .input > input') as HTMLElement)?.focus();
+            return;
+        }
+
+        ((target.value! as HTMLElement)?.querySelector('.v-input') as HTMLElement)?.focus();
+    }
+
     function useEditMode({ onFocusCell }: any) {
         const editMode = ref(false);
 
-        onKeyStroke('Enter', enterCell, { target });
+        // `{ eventName: 'keyup' }` is important to prevent focussed fields like `v-checkbox` to be triggered while entering the cell
+        onKeyStroke('Enter', enterCell, { target, eventName: 'keyup' });
         onKeyStroke(['Esc', 'Escape'], leaveCellAndFocus);
         onKeyStroke('Tab', leaveCell, { target });
         onClickOutside(target, clickOutside);
@@ -149,16 +185,23 @@
             padding: calc(8px - var(--theme--border-width)) calc(12px - var(--theme--border-width));
         }
 
-        & :deep(.v-form),
-        & :deep(.v-form > .field),
-        & :deep(.v-form > .field > .interface) {
-            height: 100%;
-        }
-
         & :deep(.v-input),
         & :deep(.v-checkbox) {
             --theme--form--field--input--height: 38px;
             min-height: 100%;
+        }
+
+        & :deep(.v-form),
+        & :deep(.v-form > .field),
+        & :deep(.v-form > .field > .interface),
+        & :deep(.v-form .collection-item-dropdown),
+        & :deep(.v-form .collection-item-dropdown .render-template),
+        & :deep(.v-form .collection-item-dropdown .preview),
+        & :deep(.v-form .many-to-one),
+        & :deep(.v-form .many-to-one .preview),
+        & :deep(.v-form .many-to-one .preview .render-template),
+        &.input-autocomplete-api :deep(.interface > div) {
+            height: 100%;
         }
 
         & :deep(.v-form) {
@@ -166,16 +209,81 @@
             width: 100%;
         }
 
-        & :deep(.v-form) {
-            min-width: 90px;
+        &.edit-mode :deep(.v-form) {
+            z-index: 3;
         }
 
-        & :deep(.v-form .v-select .v-input) {
+        & :deep(.v-form > .field) {
+            min-width: min-content;
+        }
+
+        &.collection-item-dropdown :deep(.v-form > .field) {
             min-width: 120px;
         }
 
-        &:focus .edit-marker {
+        &.select-color {
+            & :deep(.prepend) {
+                line-height: 0;
+            }
+
+            & :deep(.prepend .v-button) {
+                width: auto;
+                min-width: 24px;
+                max-height: none;
+                aspect-ratio: 1;
+                margin-left: 0;
+            }
+
+            & :deep(.prepend .v-button > button) {
+                width: 100%;
+                height: 100%;
+            }
+        }
+
+        &.slider {
+            & :deep(.field) {
+                border: var(--theme--border-width) solid var(--theme--primary);
+                border-radius: var(--theme--border-radius);
+                padding-inline: calc(12px - var(--theme--border-width));
+                box-shadow: var(--theme--form--field--input--box-shadow-focus);
+                background-color: var(--v-input-background-color, var(--theme--form--field--input--background));
+            }
+
+            & :deep(.v-slider .slider input) {
+                background-color: transparent;
+            }
+
+            & :deep(.v-slider) {
+                position: relative;
+                top: 50%;
+                margin-top: -6px;
+            }
+
+            & :deep(.v-slider .slider.thumb-label-visible) {
+                margin-bottom: 0;
+            }
+        }
+
+        .v-slider .slider .thumb-label &:focus .edit-marker {
             display: none;
+        }
+
+        &.file {
+            & :deep(.v-input) {
+                width: 100%;
+                min-width: max-content;
+            }
+
+            & :deep(.file),
+            & :deep(.v-menu-activator > div) {
+                height: 100%;
+            }
+
+            & :deep(.prepend .preview) {
+                height: 32px;
+                width: 32px;
+                margin-left: -4px;
+            }
         }
 
         .edit-marker {
