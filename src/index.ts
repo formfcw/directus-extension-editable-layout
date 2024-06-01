@@ -26,9 +26,9 @@ import { hideDragImage } from "./core-clones/utils/hide-drag-image";
 import type { HeaderRaw, Sort } from "./core-clones/components/v-table/types";
 
 export default defineLayout<LayoutOptions, LayoutQuery>({
-    id: "directus-labs-spreadsheet-layout",
-    name: "Spreadsheet",
-    icon: "table",
+    id: "editable-layout",
+    name: "Editable",
+    icon: "edit_square",
     component: Layout,
     slots: {
         options: Options,

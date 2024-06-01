@@ -1,5 +1,5 @@
 <template>
-    <div ref="target" tabindex="0" class="spreadsheet-cell" :class="{ 'edit-mode': editMode, [interfaceId]: true }"
+    <div ref="target" tabindex="0" class="editable-cell" :class="{ 'edit-mode': editMode, [interfaceId]: true }"
         @dblclick="enterCell">
         <slot v-if="editMode" name="interface" />
         <slot v-else name="display" :display-item="mergedItemWithEdits" />
@@ -122,8 +122,8 @@
             const parent = vertical ? 'tr.table-row' : 'td.cell';
             const parentSibling = (e.target as HTMLElement)?.closest(parent)?.[next ? 'nextElementSibling' : 'previousElementSibling'];
             const cell = vertical
-                ? parentSibling?.querySelectorAll('.spreadsheet-cell')?.[props.column]
-                : parentSibling?.querySelector('.spreadsheet-cell');
+                ? parentSibling?.querySelectorAll('.editable-cell')?.[props.column]
+                : parentSibling?.querySelector('.editable-cell');
 
             (cell as HTMLElement)?.focus()
         }
@@ -148,7 +148,7 @@
 
 
 <style lang="scss" scoped>
-    .spreadsheet-cell {
+    .editable-cell {
         display: flex;
         align-items: center;
         position: relative;
@@ -300,7 +300,7 @@
         }
     }
 
-    :global(.align-right .spreadsheet-cell .edit-marker) {
+    :global(.align-right .editable-cell .edit-marker) {
         left: auto !important;
         right: 1px;
     }

@@ -1,5 +1,5 @@
 <template>
-    <div class="layout-spreadsheet">
+    <div class="layout-editable">
         <v-table v-if="loading || (itemCount && itemCount > 0 && !error)" ref="table" v-model="selectionWritable"
             v-model:headers="tableHeadersWritable" class="table" fixed-header
             :show-select="showSelect ? showSelect : selection !== undefined" show-resize must-sort :sort="tableSort"
@@ -92,7 +92,7 @@
             </template>
 
             <template v-for="header, index in tableHeaders" :key="header.value" #[`item.${header.value}`]="{ item }">
-                <spreadsheet-cell :column="index" @leaveCell="autoSaveEdits" :item="item" :field-key="header.value"
+                <editable-cell :column="index" @leaveCell="autoSaveEdits" :item="item" :field-key="header.value"
                     :field-edits="edits[item[primaryKeyField?.field]]?.[header.value]"
                     :interface-id="header.field?.meta?.interface ?? 'input'">
                     <template #display="{ displayItem }">
@@ -109,7 +109,7 @@
                             :primary-key="item[primaryKeyField?.field]" autofocus :show-validation-errors="false"
                             :show-no-visible-fields="false" :raw-editor-enabled="false" />
                     </template>
-                </spreadsheet-cell>
+                </editable-cell>
             </template>
 
             <template #item-append="{ item }">
@@ -173,7 +173,7 @@
     import type { ShowSelect } from '@directus/extensions';
     import type { Field, Filter, Item } from '@directus/types';
     import { useRouter } from 'vue-router';
-    import SpreadsheetCell from './spreadsheet-cell.vue'
+    import EditableCell from './editable-cell.vue'
     // CORE CLONES
     import { HeaderRaw } from './core-clones/components/v-table/types';
     import { AliasFields, useAliasFields } from './core-clones/composables/use-alias-fields';
@@ -336,7 +336,7 @@
 
 
 <style lang="scss" scoped>
-    .layout-spreadsheet {
+    .layout-editable {
         display: contents;
         margin: var(--content-padding);
         margin-bottom: var(--content-padding-bottom);

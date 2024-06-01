@@ -1,23 +1,29 @@
 {
-    "name": "directus-extension-spreadsheet-layout",
+    "name": "directus-extension-editable-layout",
     "version": "1.0.0",
-    "description": "A spreadsheet layout that allows you to edit item fields directly inline, just like in a spreadsheet",
-    "license": "MIT",
-    "author": "Directus Labs",
-    "contributors": [
-        {
-            "name": "formfcw",
-            "email": "dev@formfcw.com"
-        }
-    ],
-    "icon": "table",
+    "description": "A table layout that allows you to edit item fields directly inline.",
+    "license": "GPL-3.0",
+    "author": {
+        "name": "formfcw",
+        "email": "dev@formfcw.com"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/formfcw/directus-extension-editable-layout"
+    },
+    "icon": "edit_square",
     "keywords": [
         "inline",
         "inline-editing",
+        "editable",
         "spreadsheet",
+        "editable-table-layout",
+        "alternative-table-layout",
+        "table-layout",
         "directus",
         "directus-extension",
         "directus-extension-layout",
+        "directus-extension-editable-layout",
         "directus-extension-spreadsheet-layout"
     ],
     "type": "module",
@@ -31,6 +37,7 @@
         "host": "^10.10.0"
     },
     "scripts": {
+        "build-publish": "directus-extension build && npm publish",
         "build": "directus-extension build",
         "dev": "directus-extension build -w --no-minify",
         "link": "directus-extension link"
