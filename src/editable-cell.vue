@@ -1,10 +1,29 @@
 <template>
-    <div ref="target" tabindex="0" class="editable-cell" :class="{ 'edit-mode': editMode, [interfaceId]: true }"
+    <div ref="target" tabindex="0" class="editable-cell" :class="{ 'edit-mode': editMode, [interfaceId]: true, inline }"
         @dblclick="enterCell">
-        <slot v-if="editMode" name="interface" />
-        <slot v-else name="display" :display-item="mergedItemWithEdits" />
 
-        <div v-if="!editMode && fieldHasEdits" v-tooltip="t('unsaved_changes')" class="edit-marker"></div>
+        <template v-if="inline">
+            <slot v-if="editMode" name="interface" />
+            <slot v-else name="display" :display-item="mergedItemWithEdits" />
+        </template>
+
+        <v-menu v-else v-model="editMode" show-arrow placement="bottom-start" :close-on-click="false"
+            :close-on-content-click="false" seamless :offsetX="-24" :offsetY="18">
+            <template #activator>
+                <div class="display-wrapper">
+                    <slot name="display" :display-item="mergedItemWithEdits" />
+                </div>
+            </template>
+
+            <div ref="popup" class="editable-cell-popup">
+                <slot name="interface" />
+            </div>
+        </v-menu>
+
+        <div v-if="(!editMode && inline || !inline) && fieldHasEdits" v-tooltip="t('unsaved_changes')"
+            class="edit-marker">
+        </div>
+
     </div>
 </template>
 
@@ -21,20 +40,31 @@
         fieldKey: string;
         fieldEdits?: any;
         interfaceId: string;
+        inline: boolean;
     }>();
 
     const emit = defineEmits(['leaveCell']);
 
     const target = ref(null);
+    const popup = ref(null);
 
-    const { editMode, enterCell } = useEditMode({ onFocusCell });
+    const { editMode, enterCell } = useEditMode({
+        onFocusCell() {
+            if (props.inline) {
+                onFocusInlineCell();
+                return;
+            }
+
+            onFocusPopupCell();
+        }
+    });
 
     useCellNavigation(editMode);
 
     const { t } = useI18n();
     const { fieldHasEdits, mergedItemWithEdits } = useDisplayEdits();
 
-    function onFocusCell() {
+    function onFocusInlineCell() {
         // CLICK
 
         if (['select-dropdown', 'datetime', 'select-multiple-dropdown'].includes(props.interfaceId)) {
@@ -47,7 +77,7 @@
         if (['collection-item-dropdown', 'file', 'select-dropdown-m2o'].includes(props.interfaceId)) {
             setTimeout(() => {
                 ((target.value! as HTMLElement)?.querySelector('.v-input') as HTMLElement)?.click();
-            }, 50);
+            }, 100);
             return;
         }
 
@@ -69,6 +99,44 @@
         }
 
         ((target.value! as HTMLElement)?.querySelector('.v-input') as HTMLElement)?.focus();
+    }
+
+    function onFocusPopupCell() {
+        ((popup.value! as HTMLElement)?.closest('.v-menu-popper') as HTMLElement).style.zIndex = '490';
+
+        if (['input-code'].includes(props.interfaceId)) {
+            setTimeout(() => {
+                ((popup.value! as HTMLElement)?.querySelector('textarea') as HTMLElement)?.focus();
+            }, 50);
+            return;
+        }
+
+        if (['select-radio'].includes(props.interfaceId)) {
+            const checkedRadio: HTMLElement | null = (popup.value! as HTMLElement)?.querySelector('.v-radio.checked') || (popup.value! as HTMLElement)?.querySelector('.v-radio');
+            checkedRadio?.focus();
+            return;
+        }
+
+        if (['select-multiple-checkbox', 'select-multiple-checkbox-tree'].includes(props.interfaceId)) {
+            ((popup.value! as HTMLElement)?.querySelector('.v-checkbox') as HTMLElement)?.focus();
+            return;
+        }
+
+        // TODO: Tinymce, markdown, input-code, block editor. problem: growing height.
+        // if (['input-rich-text-html'].includes(props.interfaceId)) {
+        //     ((popup.value! as HTMLElement)?.querySelector('.interface>.tox-tinymce') as HTMLElement)?.click();
+        //     return;
+        // }
+
+        if (['input-multiline'].includes(props.interfaceId)) {
+            ((popup.value! as HTMLElement)?.querySelector('.v-textarea') as HTMLElement)?.focus();
+            return;
+        }
+
+        if (['tags'].includes(props.interfaceId)) {
+            ((popup.value! as HTMLElement)?.querySelector('.v-input input') as HTMLElement)?.focus();
+            return;
+        }
     }
 
     function useEditMode({ onFocusCell }: any) {
@@ -148,6 +216,12 @@
 
 
 <style lang="scss" scoped>
+    :global(.editable-cell-popup) {
+        width: calc(2 * var(--form-column-max-width));
+        max-width: 90vw;
+        padding: 12px;
+    }
+
     .editable-cell {
         display: flex;
         align-items: center;
@@ -155,7 +229,7 @@
         width: 100%;
         height: 100%;
 
-        &:not(.edit-mode) {
+        &:not(.edit-mode.inline) {
             overflow: hidden;
             text-align: inherit;
             justify-content: inherit;
@@ -174,13 +248,25 @@
             }
         }
 
+        &:not(.inline) .display-wrapper {
+            width: 100%;
+        }
+
+        &.edit-mode:not(.inline) {
+
+            &,
+            &:hover {
+                border-color: var(--theme--primary);
+            }
+        }
+
         &.edit-mode :deep(.interface>*),
         &.edit-mode :deep(.v-input .input),
         &.edit-mode :deep(.v-checkbox) {
             border-color: var(--theme--primary);
         }
 
-        &:not(.edit-mode),
+        &:not(.edit-mode.inline),
         & :deep(.v-input .input) {
             padding: calc(8px - var(--theme--border-width)) calc(12px - var(--theme--border-width));
         }
@@ -303,5 +389,9 @@
     :global(.align-right .editable-cell .edit-marker) {
         left: auto !important;
         right: 1px;
+    }
+
+    :global(.v-menu-popper .flatpickr-wrapper) {
+        min-width: 300px;
     }
 </style>

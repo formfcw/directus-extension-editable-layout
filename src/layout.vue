@@ -94,7 +94,7 @@
             <template v-for="header, index in tableHeaders" :key="header.value" #[`item.${header.value}`]="{ item }">
                 <editable-cell :column="index" @leaveCell="autoSaveEdits" :item="item" :field-key="header.value"
                     :field-edits="edits[item[primaryKeyField?.field]]?.[header.value]"
-                    :interface-id="header.field?.meta?.interface ?? 'input'">
+                    :interface-id="header.field?.meta?.interface ?? 'input'" :inline="isInterfaceInline(header.field)">
                     <template #display="{ displayItem }">
                         <render-display :value="getFromAliasedItem(displayItem, header.value)"
                             :display="header.field.display" :options="header.field.displayOptions"
@@ -205,6 +205,7 @@
         itemCount?: number;
         fields: string[];
         allowedFields: Ref<{ field: string, name: string }[]>;
+        isInterfaceInline: () => boolean;
         limit: number;
         primaryKeyField?: Field;
         info?: Collection;
@@ -343,6 +344,10 @@
     }
 
     .v-table {
+        & :deep(.table-header .fixed) {
+            z-index: 4;
+        }
+
         & :deep(.append.cell) {
             position: sticky;
             right: 12px;

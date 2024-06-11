@@ -53,7 +53,8 @@ export default defineLayout<LayoutOptions, LayoutQuery>({
             sortField,
         } = useCollection(collection);
 
-        const { allowedFields, filterAllowedFields } = useAllowedFields();
+        const { allowedFields, filterAllowedFields, isInterfaceInline } =
+            useAllowedFields();
 
         const { sort, limit, page, fields } = useItemOptions();
 
@@ -143,6 +144,7 @@ export default defineLayout<LayoutOptions, LayoutQuery>({
             fields,
             limit,
             allowedFields,
+            isInterfaceInline,
             tableSpacing,
             primaryKeyField,
             info,
@@ -538,20 +540,33 @@ export default defineLayout<LayoutOptions, LayoutQuery>({
             return {
                 allowedFields,
                 filterAllowedFields,
+                isInterfaceInline,
             };
 
             function filterAllowedFields(field: Field) {
+                const relational =
+                    !!field.schema?.foreign_key_column ||
+                    !!field.schema?.foreign_key_table ||
+                    field.type == "alias";
+                const flexibleEditor =
+                    field.meta?.interface == "flexible-editor-interface";
+
                 return (
                     field &&
                     !field.meta?.special?.includes("no-data") &&
                     !field.schema?.is_primary_key &&
                     !field.meta?.hidden &&
                     !field.meta?.readonly &&
-                    (!field.meta?.interface ||
-                        (field.meta.interface &&
-                            allowedInlineInterfaces.includes(
-                                field.meta.interface
-                            )))
+                    !flexibleEditor &&
+                    !relational
+                );
+            }
+
+            function isInterfaceInline(field: Field) {
+                return (
+                    !field.meta?.interface ||
+                    (field.meta.interface &&
+                        allowedInlineInterfaces.includes(field.meta.interface))
                 );
             }
         }
