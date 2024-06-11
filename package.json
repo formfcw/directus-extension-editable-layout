@@ -1,6 +1,6 @@
 {
     "name": "directus-extension-editable-layout",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "description": "A table layout that allows you to edit item fields directly inline.",
     "license": "GPL-3.0",
     "author": {
