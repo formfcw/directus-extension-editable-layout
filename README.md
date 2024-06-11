@@ -2,7 +2,7 @@
 
 A table layout that allows you to edit item fields directly inline.
 
-![](https://raw.githubusercontent.com/formfcw/directus-extension-editable-layout/main/docs/preview.png)
+![](https://raw.githubusercontent.com/formfcw/directus-extension-editable-layout/main/docs/preview-240611.png)
 
 ## Installation & Setup
 
