@@ -23,9 +23,9 @@ Click a cell within the collection table and press `[Enter]` or `Double-click` t
 
 ## Supported Interfaces
 
-**Inline:** boolean, collection-item-dropdown, datetime, input, input-autocomplete-api, input-hash, select-color, select-dropdown, select-icon, select-multiple-dropdown, slider.
+All interfaces except relational ones are supported — non-inline/non-trivial interfaces open in a popup.
 
-**Other Interfaces:** Coming soon … (next release)
+**Relational Interfaces:** Coming soon …
 
 ## Contribution
 
