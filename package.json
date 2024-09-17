@@ -1,6 +1,6 @@
 {
     "name": "directus-extension-editable-layout",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "description": "A table layout that allows you to edit item fields directly inline.",
     "license": "GPL-3.0",
     "author": {
@@ -31,10 +31,10 @@
         "dist"
     ],
     "directus:extension": {
+        "host": "^10.0.0 || ^11.0.0",
         "type": "layout",
         "path": "dist/index.js",
-        "source": "src/index.ts",
-        "host": "^10.10.0"
+        "source": "src/index.ts"
     },
     "scripts": {
         "build-publish": "directus-extension build && npm publish",
@@ -43,14 +43,14 @@
         "link": "directus-extension link"
     },
     "devDependencies": {
-        "@directus/extensions-sdk": "11.0.3",
+        "@directus/extensions-sdk": "^12.0.2",
         "@types/lodash": "^4.17.1",
-        "@vueuse/core": "^10.9.0",
+        "@vueuse/core": "^11.1.0",
         "lodash": "^4.17.21",
         "sass": "^1.76.0",
         "typescript": "^5.4.5",
         "vue": "^3.4.26",
-        "vue-i18n": "^9.13.1",
+        "vue-i18n": "^10.0.1",
         "vue-router": "^4.3.2"
     }
 }
